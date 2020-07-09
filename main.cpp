@@ -23,7 +23,7 @@ struct Assumption
 int main()
 {
   std::string line;
-  
+
   std::cout << "Input style: 0xxxx1xxx0x1" << std::endl;
   std::cout << "1 or 0 for known value, x for unknown" << std::endl;
 
@@ -104,9 +104,8 @@ int main()
           line[assumption.x] = assumption.value;
           puzzle_stack.back().set_line(assumption.y, false, line);
         }
-        
-        assumptions.pop_back();
 
+        assumptions.pop_back();
       }
       else
       {
@@ -156,6 +155,8 @@ int main()
 
   std::cout << "Solved" << std::endl;
 
+  puzzle_stack.back().print();
+
   return 0;
 }
 
@@ -177,12 +178,13 @@ bool IsValidPuzzle(BinaryPuzzle &puzzle)
 
 void reducePuzzle(BinaryPuzzle &puzzle, size_t size, int &rnum_unknowns)
 {
-  int prev_num_unknowns = -1;
-  int num_unknowns = -1;
+  int prev_num_unknowns{};
+  int num_unknowns{};
 
   do
   {
     prev_num_unknowns = num_unknowns;
+    num_unknowns = 0;
 
     // Solve the matrix's rows and columns
     for (int i = 0; i < size; i++)
@@ -198,9 +200,9 @@ void reducePuzzle(BinaryPuzzle &puzzle, size_t size, int &rnum_unknowns)
       puzzle.set_line(i, true, column);
 
       // Tally up the unknowns
-      num_unknowns = col_unknowns + row_unknowns;
+      num_unknowns += col_unknowns + row_unknowns;
     }
-
+  // We repeat until we run out of unknowns, or our iteration didn't have an effect
   } while (num_unknowns > 0 && num_unknowns != prev_num_unknowns);
 
   rnum_unknowns = num_unknowns;
